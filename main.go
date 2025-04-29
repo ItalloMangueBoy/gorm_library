@@ -16,9 +16,8 @@ func main() {
 	}
 
 	// Initialize database connection
-	if err := config.ConnectDB(); err != nil {
-		log.Fatal("Failed to connect to database")
-	}
+	config.ConnectDB()
+	config.Migrate()
 
 	// Initialize server
 	router := routes.SetupRoutes()
@@ -26,4 +25,4 @@ func main() {
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)
 	}
-    }
+}

@@ -1,4 +1,4 @@
-package config
+package database
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// Package config handles the database connection and migrations
-var DB *gorm.DB
+// Represents the database connection
+var Conn *gorm.DB
 
 var err error
 
@@ -29,7 +29,7 @@ func ConnectDB() {
 		os.Getenv("DB_PORT"),
 	)
 
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	Conn, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to database")
@@ -38,7 +38,7 @@ func ConnectDB() {
 
 // Migrate creates the database tables based on the models
 func Migrate() {
-	err := DB.AutoMigrate(model_list...)
+	err := Conn.AutoMigrate(model_list...)
 	if err != nil {
 		log.Fatal("Failed to migrate database")
 	}

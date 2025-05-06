@@ -1,7 +1,7 @@
 package main
 
 import (
-	"library/config"
+	"library/config/database"
 	"library/src/routes"
 	"log"
 	"net/http"
@@ -16,8 +16,8 @@ func main() {
 	}
 
 	// Initialize database connection
-	config.ConnectDB()
-	config.Migrate()
+	database.ConnectDB()
+	database.Migrate()
 
 	// Initialize server
 	router := routes.SetupRoutes()

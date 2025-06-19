@@ -6,12 +6,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// SetupRoutes initializes the routes for the application
+// SetupRoutes initializes the application's routes.
 func SetupRoutes() *mux.Router {
 	router := mux.NewRouter()
 
-	// Define books routes
+	// Book routes
 	router.HandleFunc("/books", controllers.CreateBook).Methods("POST")
+	router.HandleFunc("/books/{id}", controllers.GetBook).Methods("GET")
 
 	return router
 }

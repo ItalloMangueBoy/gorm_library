@@ -7,6 +7,7 @@ import (
 	"library/src/views"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -58,4 +59,33 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 
 	// Respond with the found book
 	views.JSON(w, http.StatusOK, book)
+}
+
+// ListBooks handles fetching a list of books, optionally filtered by a search query
+func ListBooks(w http.ResponseWriter, r *http.Request) {
+	// Get the 'search' query parameter and trim whitespace
+	search := strings.TrimSpace(r.URL.Query().Get("search"))
+	var books []models.Book
+	query := database.Conn
+
+	// If a search term is provided, filter books by title or author (case-insensitive)
+	if search != "" {
+		searchPattern := "%" + strings.ToLower(search) + "%"
+		query = query.Where("LOWER(title) LIKE ? OR LOWER(author) LIKE ?", searchPattern, searchPattern)
+	}
+
+	// Execute the query to find books
+	if err := query.Find(&books).Error; err != nil {
+		views.Message(w, http.StatusInternalServerError, "Failed to retrieve books")
+		return
+	}
+
+	// If no books are found, return a not found message
+	if len(books) == 0 {
+		views.Message(w, http.StatusNotFound, "No books found")
+		return
+	}
+
+	// Respond with the list of books
+	views.JSON(w, http.StatusOK, books)
 }

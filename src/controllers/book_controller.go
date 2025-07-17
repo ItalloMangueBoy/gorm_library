@@ -89,3 +89,44 @@ func ListBooks(w http.ResponseWriter, r *http.Request) {
 	// Respond with the list of books
 	views.JSON(w, http.StatusOK, books)
 }
+
+// UpdateBook handles updating an existing book by its ID
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
+	var book models.Book
+	var updates models.Book
+
+	// Parse the ID from the URL
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		views.Message(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	// Retrieve the book from the database
+	if err := database.Conn.First(&book, id).Error; err != nil {
+		views.Message(w, http.StatusNotFound, "ID not found")
+		return
+	}
+
+	// Decode request body
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		views.Message(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	// Format and validate book data
+	if err := updates.Format().Valid(); err != nil {
+		views.ModelErrors(w, http.StatusUnprocessableEntity, err, "Invalid book data")
+		return
+	}
+
+	// Update book in database
+	if err := database.Conn.Model(&book).Updates(updates).Error; err != nil {
+		views.Message(w, http.StatusInternalServerError, "Failed to update book")
+		return
+	}
+
+	// Respond with updated book
+	views.JSON(w, http.StatusOK, book)
+}

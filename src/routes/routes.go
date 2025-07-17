@@ -14,6 +14,7 @@ func SetupRoutes() *mux.Router {
 	router.HandleFunc("/books", controllers.CreateBook).Methods("POST")
 	router.HandleFunc("/books", controllers.ListBooks).Methods("GET")
 	router.HandleFunc("/books/{id}", controllers.GetBook).Methods("GET")
+	router.HandleFunc("/books/{id}", controllers.UpdateBook).Methods("PUT")
 
 	return router
 }

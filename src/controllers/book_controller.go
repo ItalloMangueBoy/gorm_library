@@ -130,3 +130,31 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	// Respond with updated book
 	views.JSON(w, http.StatusOK, book)
 }
+
+// DeleteBook handles deleting a book by its ID
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
+	// Parse the ID from the URL
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		views.Message(w, http.StatusBadRequest, "Invalid ID format")
+		return
+	}
+
+	// Attempt to delete the book directly
+	response := database.Conn.Where("id = ?", id).Delete(&models.Book{})
+
+	if ; response.Error != nil {
+		views.Message(w, http.StatusInternalServerError, "Failed to delete book")
+		return
+	}
+
+	// Check if any row was affected (book existed)
+	if response.RowsAffected == 0 {
+		views.Message(w, http.StatusNotFound, "ID not found")
+		return
+	}
+
+	// Respond with a success message
+	views.Message(w, http.StatusOK, "Book deleted successfully")
+}

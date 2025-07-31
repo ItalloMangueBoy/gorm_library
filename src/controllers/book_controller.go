@@ -144,7 +144,7 @@ func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	// Attempt to delete the book directly
 	response := database.Conn.Where("id = ?", id).Delete(&models.Book{})
 
-	if ; response.Error != nil {
+	if response.Error != nil {
 		views.Message(w, http.StatusInternalServerError, "Failed to delete book")
 		return
 	}

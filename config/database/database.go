@@ -17,6 +17,7 @@ var err error
 
 var model_list = []interface{}{
 	&models.Book{},
+	&models.Author{},
 }
 
 // ConnectDB initializes the database connection using GORM

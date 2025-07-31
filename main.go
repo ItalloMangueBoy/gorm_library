@@ -2,6 +2,7 @@ package main
 
 import (
 	"library/config/database"
+	"library/src/helpers"
 	"library/src/routes"
 	"log"
 	"net/http"
@@ -19,8 +20,11 @@ func main() {
 	database.ConnectDB()
 	database.Migrate()
 
-	// Initialize server
+	// Set up routes
 	router := routes.SetupRoutes()
+	helpers.LogRoutes(router)
+
+	// Initialize server
 	log.Println("Starting server on :8080")
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)
